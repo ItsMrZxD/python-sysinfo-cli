@@ -16,7 +16,7 @@ import socket
 import sys
 import time
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -205,12 +205,14 @@ def battery_info() -> dict | None:
         try:
             import ctypes
 
+            # These four fields are unsigned BYTEs in the Win32 API. Using a
+            # signed type here would wrap the 255 "no battery" sentinel to -1.
             class SystemPowerStatus(ctypes.Structure):
                 _fields_ = [
-                    ("ACLineStatus", ctypes.c_byte),
-                    ("BatteryFlag", ctypes.c_byte),
-                    ("BatteryLifePercent", ctypes.c_byte),
-                    ("SystemStatusFlag", ctypes.c_byte),
+                    ("ACLineStatus", ctypes.c_ubyte),
+                    ("BatteryFlag", ctypes.c_ubyte),
+                    ("BatteryLifePercent", ctypes.c_ubyte),
+                    ("SystemStatusFlag", ctypes.c_ubyte),
                     ("BatteryLifeTime", ctypes.c_ulong),
                     ("BatteryFullLifeTime", ctypes.c_ulong),
                 ]
@@ -218,7 +220,8 @@ def battery_info() -> dict | None:
             status = SystemPowerStatus()
             if ctypes.windll.kernel32.GetSystemPowerStatus(ctypes.byref(status)):
                 percent = status.BatteryLifePercent
-                if percent == 255:  # unknown / no battery
+                # 255 = unknown; BatteryFlag bit 7 (128) = no system battery.
+                if percent == 255 or percent > 100 or status.BatteryFlag == 128:
                     return None
                 charging = status.ACLineStatus == 1
                 return {"percent": int(percent), "status": "Charging" if charging else "Discharging"}
@@ -312,8 +315,15 @@ def human_rows(data: dict) -> list[tuple[str, str]]:
     net = data["network"]
     if net.get("primary_ip"):
         rows.append(("IP", net["primary_ip"]))
-    if net.get("interfaces"):
-        rows.append(("Ifaces", ", ".join(net["interfaces"])))
+    ifaces = net.get("interfaces") or []
+    if ifaces:
+        # Some platforms (notably Windows) report dozens of pseudo-interfaces.
+        # Keep the table readable; the full list still lives in --json output.
+        shown = ifaces[:6]
+        label = ", ".join(shown)
+        if len(ifaces) > len(shown):
+            label += f", +{len(ifaces) - len(shown)} more"
+        rows.append(("Ifaces", label))
 
     bat = data["battery"]
     if bat:
