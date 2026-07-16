@@ -1,5 +1,7 @@
 # sysglance
 
+[![CI](https://github.com/ItsMrZxD/sysglance/actions/workflows/ci.yml/badge.svg)](https://github.com/ItsMrZxD/sysglance/actions/workflows/ci.yml)
+
 A tiny, zero-dependency CLI that prints a clean snapshot of your system — CPU,
 memory, disk, network, battery, temperature, OS, and uptime. Pure Python
 standard library, so it runs anywhere Python 3.8+ does, with no `pip install`

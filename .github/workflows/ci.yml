@@ -1,0 +1,28 @@
+# Continuous integration: run the unit tests on every push and pull request.
+# The matrix covers all three OSes the README claims support for, plus the
+# oldest Python version still offered by setup-python on current runners.
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.14"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.9"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run tests
+        run: python -m unittest discover -v
