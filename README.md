@@ -60,9 +60,8 @@ structured data drives both the table and the JSON output.
 Any metric that isn't available on your platform degrades gracefully: it shows
 `n/a` in the table (or `null` in JSON) instead of crashing.
 
-> Tested on Linux. The macOS and Windows code paths use documented system APIs
-> and fall back safely, but haven't been run on those platforms yet — bug
-> reports welcome.
+> The test suite runs in CI on Linux, macOS, and Windows on every push, so
+> all three platform code paths are exercised continuously.
 
 ## Tests
 
