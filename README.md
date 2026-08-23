@@ -57,11 +57,8 @@ structured data drives both the table and the JSON output.
 | CPU temp      | `/sys/class/thermal`      | —                      | —                        |
 | Disk / OS / IP| `shutil`, `platform`, `socket` (all platforms)              |||
 
-Any metric that isn't available on your platform degrades gracefully: it shows
-`n/a` in the table (or `null` in JSON) instead of crashing.
-
-> The test suite runs in CI on Linux, macOS, and Windows on every push, so
-> all three platform code paths are exercised continuously.
+Any metric that isn't available on your platform shows `n/a` in the table
+(or `null` in JSON) instead of crashing.
 
 ## Tests
 

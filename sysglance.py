@@ -2,8 +2,7 @@
 """sysglance - a tiny, zero-dependency snapshot of your system.
 
 Prints CPU, memory, disk, network, battery, temperature, OS, and uptime
-using only the Python standard library. Works on Linux, macOS, and Windows,
-with graceful fallbacks when a particular metric isn't available.
+using only the Python standard library. Works on Linux, macOS, and Windows.
 """
 from __future__ import annotations
 
@@ -25,11 +24,7 @@ CYAN = "\033[36m"
 GREEN = "\033[32m"
 
 
-# --------------------------------------------------------------------------- #
-# Output helpers
-# --------------------------------------------------------------------------- #
 def supports_color() -> bool:
-    """True if stdout is an interactive terminal that likely supports ANSI."""
     return sys.stdout.isatty() and os.name != "nt"
 
 
@@ -38,7 +33,6 @@ def paint(text: str, color: str, enable: bool) -> str:
 
 
 def human_bytes(n: float) -> str:
-    """Format a byte count as a short human-readable string."""
     for unit in ("B", "KB", "MB", "GB", "TB", "PB"):
         if n < 1024.0:
             return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
@@ -62,9 +56,6 @@ def fmt_uptime(secs: float | None) -> str:
     return " ".join(parts)
 
 
-# --------------------------------------------------------------------------- #
-# Metric collection (each function degrades gracefully to None)
-# --------------------------------------------------------------------------- #
 def cpu_model() -> str:
     """Best-effort CPU model name across platforms."""
     try:
@@ -133,7 +124,6 @@ def mem_info() -> tuple[int | None, int | None]:
 
 
 def uptime_seconds() -> float | None:
-    """Seconds since boot, or None if it can't be determined."""
     try:
         with open("/proc/uptime") as fh:
             return float(fh.read().split()[0])
@@ -262,7 +252,6 @@ def cpu_temp() -> float | None:
 
 
 def collect() -> dict:
-    """Gather all system information into a structured, JSON-ready dict."""
     total, avail = mem_info()
     disk = shutil.disk_usage(os.path.expanduser("~"))
     user = os.environ.get("USER") or os.environ.get("USERNAME") or "unknown"
@@ -286,11 +275,7 @@ def collect() -> dict:
     }
 
 
-# --------------------------------------------------------------------------- #
-# Presentation
-# --------------------------------------------------------------------------- #
 def human_rows(data: dict) -> list[tuple[str, str]]:
-    """Turn the structured data into ordered (label, value) display rows."""
     rows = [
         ("User", f"{data['user']}@{data['hostname']}"),
         ("OS", f"{data['os']['system']} {data['os']['release']}".strip()),
@@ -350,9 +335,6 @@ def render(rows: list[tuple[str, str]], color: bool) -> None:
         print(f"{paint(f'{key:<{width}}', GREEN, color)}  {value}")
 
 
-# --------------------------------------------------------------------------- #
-# CLI
-# --------------------------------------------------------------------------- #
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="A tiny snapshot of your system.")
     parser.add_argument("--json", action="store_true", help="output as JSON")
