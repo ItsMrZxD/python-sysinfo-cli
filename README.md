@@ -1,7 +1,7 @@
 # Python Sysinfo CLI
 
 [![CI](https://github.com/ItsMrZxD/python-sysinfo-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/ItsMrZxD/python-sysinfo-cli/actions/workflows/ci.yml)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **A zero-dependency Python CLI that prints a clean snapshot of your system —
@@ -9,13 +9,34 @@ CPU, memory, disk, network, battery, temperature, OS, and uptime — as a
 readable table or as JSON. Pure standard library, single file, cross-platform.**
 
 `sysglance.py` is one file with no `pip install` step, so it runs anywhere
-Python 3.8+ does. Drop it on a server, run it, and get the system information
+Python 3.9+ does. Drop it on a server, run it, and get the system information
 you actually want at a glance. The `--json` mode makes it a convenient source
 of machine-readable system info for scripts, dashboards, and monitoring
 one-liners.
 
 Works on **Linux, macOS, and Windows**, reading each platform's native
 interfaces rather than shelling out to third-party tools.
+
+```
+$ python sysglance.py --no-color
+sysglance
+---------
+User      user@host
+OS        Windows 10
+Arch      AMD64
+Python    3.14.3
+CPU       AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD
+Cores     12
+Memory    13.5 GB / 31.9 GB (42%)
+Disk (~)  525.8 GB / 930.9 GB (56%)
+Uptime    1h 0m
+IP        192.168.1.42
+Ifaces    ethernet_0, ethernet_1, ethernet_2, ethernet_3, ethernet_4, ethernet_5, +27 more
+```
+
+Real output from a run on Windows, with only the username, hostname, and local
+IP replaced. Battery and CPU Temp rows are absent here because this machine is
+a desktop and CPU temperature is Linux-only — see [Limitations](#limitations).
 
 ## Features
 
@@ -31,7 +52,8 @@ interfaces rather than shelling out to third-party tools.
 
 ## Requirements
 
-Python 3.8 or newer. Nothing else.
+Python 3.9 or newer — the oldest version the test suite runs against in CI.
+Nothing else.
 
 CI runs the test suite on Linux, macOS, and Windows, and against Python 3.9
 and 3.14.
@@ -64,27 +86,7 @@ python3 sysglance.py --version
 | `--version` | print the version and exit |
 | `-h`, `--help` | show usage and exit |
 
-## Example output
-
-```
-sysglance
----------
-User      mrz@laptop
-OS        Linux 6.18.5
-Arch      x86_64
-Python    3.11.15
-CPU       Intel(R) Xeon(R) Processor @ 2.80GHz
-Cores     4
-Memory    5.2 GB / 15.7 GB (33%)
-Disk (~)  7.0 GB / 252.0 GB (3%)
-Uptime    2d 4h 31m
-IP        192.168.1.42
-Ifaces    lo, eth0
-Battery   87% (Discharging)
-CPU Temp  44.0 C
-```
-
-### JSON output
+## JSON output
 
 Piping to a tool? Use `--json`:
 
