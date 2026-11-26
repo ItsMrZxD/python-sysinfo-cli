@@ -1,6 +1,7 @@
 # Continuous integration: run the unit tests on every push and pull request.
 # The matrix covers all three OSes the README claims support for, plus the
-# oldest Python version still offered by setup-python on current runners.
+# oldest supported Python (3.9), pinned to Ubuntu 24.04 because 26.04 has no
+# 3.9 build.
 name: CI
 
 on: [push, pull_request]
@@ -14,7 +15,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.14"]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             python-version: "3.9"
 
     steps:
