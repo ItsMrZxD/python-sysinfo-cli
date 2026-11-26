@@ -4,17 +4,15 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**A zero-dependency Python CLI that prints a clean snapshot of your system —
-CPU, memory, disk, network, battery, temperature, OS, and uptime — as a
-readable table or as JSON. Pure standard library, single file, cross-platform.**
+A Python CLI that prints a snapshot of your system (CPU, memory, disk,
+network, battery, temperature, OS, and uptime) as a table or as JSON. Standard
+library only, single file, cross-platform.
 
 `sysglance.py` is one file with no `pip install` step, so it runs anywhere
-Python 3.9+ does. Drop it on a server, run it, and get the system information
-you actually want at a glance. The `--json` mode makes it a convenient source
-of machine-readable system info for scripts, dashboards, and monitoring
-one-liners.
+Python 3.9+ does, including on a server. The `--json` mode gives
+machine-readable system info for scripts, dashboards, and monitoring.
 
-Works on **Linux, macOS, and Windows**, reading each platform's native
+It works on **Linux, macOS, and Windows**, reading each platform's native
 interfaces rather than shelling out to third-party tools.
 
 ```
@@ -36,23 +34,23 @@ Ifaces    ethernet_0, ethernet_1, ethernet_2, ethernet_3, ethernet_4, ethernet_5
 
 Real output from a run on Windows, with only the username, hostname, and local
 IP replaced. Battery and CPU Temp rows are absent here because this machine is
-a desktop and CPU temperature is Linux-only — see [Limitations](#limitations).
+a desktop and CPU temperature is Linux-only. See [Limitations](#limitations).
 
 ## Features
 
-- **One-screen system summary** — user, hostname, OS, architecture, Python
+- **One-screen system summary**: user, hostname, OS, architecture, Python
   version, CPU model and core count, memory, disk, uptime, IP address, network
   interfaces, battery, and CPU temperature
-- **Zero dependencies** — Python standard library only, nothing to install
-- **Three output modes** — coloured table, plain text for piping, and JSON
+- **No dependencies**: Python standard library only, nothing to install
+- **Three output modes**: coloured table, plain text for piping, and JSON
 - **Cross-platform**, using native interfaces per OS (see the table below)
-- **Degrades gracefully** — anything unavailable on your platform is omitted
-  or reported as `null` rather than crashing
-- Single file — copy `sysglance.py` anywhere and run it
+- Anything unavailable on your platform is omitted or reported as `null`
+  rather than crashing
+- Single file: copy `sysglance.py` anywhere and run it
 
 ## Requirements
 
-Python 3.9 or newer — the oldest version the test suite runs against in CI.
+Python 3.9 or newer, the oldest version the test suite runs against in CI.
 Nothing else.
 
 CI runs the test suite on Linux, macOS, and Windows, and against Python 3.9
@@ -71,7 +69,7 @@ python3 sysglance.py
 ## Usage
 
 ```bash
-python3 sysglance.py            # pretty, coloured table
+python3 sysglance.py            # coloured table
 python3 sysglance.py --no-color # plain text (good for piping to a file)
 python3 sysglance.py --json     # machine-readable JSON
 python3 sysglance.py --version
@@ -107,17 +105,17 @@ when the table truncates it.
 
 ## How it works
 
-No third-party libraries — just the standard library reading how each system
+No third-party libraries. The standard library reads how each system
 exposes its own state. Collection is separated from presentation, so the same
 structured data drives both the table and the JSON output.
 
 | Metric | Linux | macOS | Windows |
 |---------------|---------------------------|------------------------|--------------------------|
 | CPU model | `/proc/cpuinfo` | `sysctl` | `PROCESSOR_IDENTIFIER` |
-| Memory | `/proc/meminfo` | — | `GlobalMemoryStatusEx` |
+| Memory | `/proc/meminfo` | n/a | `GlobalMemoryStatusEx` |
 | Uptime | `/proc/uptime` | `sysctl kern.boottime` | `GetTickCount64` |
 | Battery | `/sys/class/power_supply` | `pmset` | `GetSystemPowerStatus` |
-| CPU temp | `/sys/class/thermal` | — | — |
+| CPU temp | `/sys/class/thermal` | n/a | n/a |
 | Disk / OS / IP | `shutil`, `platform`, `socket` (all platforms) |||
 
 The Windows values come from calling the Win32 API directly through `ctypes`
@@ -145,7 +143,7 @@ CI runs the suite on `ubuntu-latest`, `windows-latest`, and `macos-latest`.
   not report them; memory shows `n/a`. In `--json` output they are `null`.
 - **CPU temperature is Linux-only.** macOS and Windows both require privileged
   or vendor-specific interfaces to read it.
-- **Memory is not reported on macOS** — there is no `/proc/meminfo` and no
+- **Memory is not reported on macOS.** There is no `/proc/meminfo` and no
   `ctypes` path implemented for it.
 - **Colour is disabled on Windows.** Output is plain text there regardless of
   terminal capability.
@@ -153,7 +151,7 @@ CI runs the suite on `ubuntu-latest`, `windows-latest`, and `macos-latest`.
   mounted volume.
 - The table truncates the interface list to the first six, with a `+N more`
   marker. `--json` always carries the full list.
-- This is a point-in-time snapshot, not a monitor — there is no sampling
+- This is a point-in-time snapshot, not a monitor. There is no sampling
   interval, so CPU *utilisation* is not reported, only the model and core count.
 
 ## Ideas for next
@@ -164,4 +162,4 @@ CI runs the suite on `ubuntu-latest`, `windows-latest`, and `macos-latest`.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
